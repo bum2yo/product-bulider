@@ -29,5 +29,5 @@ This project will create a simple web page that generates a set of 6 unique lott
 
 1.  [x] 더 나은 레이아웃 구조와 Google Font 추가를 위해 index.html을 수정합니다.
 2.  [x] 그라데이션 배경, Glassmorphism 효과, 새로운 색상 팔레트 및 타이포그래피를 적용하여 style.css를 전면 개편합니다.
-3.  [ ] 변경 사항을 git에 커밋합니다.
-4.  [ ] 변경 사항을 GitHub에 푸시합니다.
+3.  [x] 변경 사항을 git에 커밋합니다.
+4.  [x] 변경 사항을 GitHub에 푸시합니다.
