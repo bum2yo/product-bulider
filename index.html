@@ -1,35 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
+  <title>로또 번호 추첨기 및 제휴 문의</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link href='/style.css' rel='stylesheet'>
 </head>
 <body>
-  <main>
-    <h1>로또 번호 추첨기</h1>
-    <div class="lotto-container">
-      <div id="lotto-numbers" class="lotto-numbers"></div>
-      <button id="generate-btn" class="generate-btn">번호 생성</button>
-    </div>
-  </main>
+  <div class="container">
+    <main>
+      <h1>로또 번호 추첨기</h1>
+      <div class="lotto-container">
+        <div id="lotto-numbers" class="lotto-numbers"></div>
+        <button id="generate-btn" class="generate-btn">번호 생성</button>
+      </div>
+    </main>
 
-  <section class="contact-form-section">
-    <h2>제휴 문의</h2>
-    <form action="https://formspree.io/f/mwvvenol" method="POST" class="contact-form">
-      <label for="name">이름:</label>
-      <input type="text" id="name" name="name" required>
+    <section class="contact-form-section">
+      <h2>제휴 문의</h2>
+      <form action="https://formspree.io/f/mwvvenol" method="POST" class="contact-form">
+        <div class="form-group">
+          <label for="name">이름:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
 
-      <label for="email">이메일:</label>
-      <input type="email" id="email" name="email" required>
+        <div class="form-group">
+          <label for="email">이메일:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
 
-      <label for="message">문의 내용:</label>
-      <textarea id="message" name="message" rows="5" required></textarea>
+        <div class="form-group">
+          <label for="message">문의 내용:</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+        </div>
 
-      <button type="submit">문의 보내기</button>
-    </form>
-  </section>
+        <button type="submit">문의 보내기</button>
+      </form>
+    </section>
+  </div>
 
   <script defer type="text/javascript" src="/main.js"></script>
 </body>
