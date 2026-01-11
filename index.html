@@ -21,6 +21,7 @@
       font-family: 'JetBrains Mono', monospace;
       color: #111;
       min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .terminal {
@@ -34,6 +35,7 @@
 
     .muted {
       color: #666;
+      transition: color 0.3s;
     }
 
     .spacer {
@@ -55,13 +57,26 @@
     a {
       color: #111;
       text-decoration: none;
+      transition: color 0.3s;
     }
 
     a:hover {
       text-decoration: underline;
     }
+    
+    /* --- Dark Mode Toggle --- */
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        padding: 5px 8px;
+        border: 1px solid #111;
+        transition: all 0.3s;
+    }
 
-    /* Popup styles */
+    /* --- Popup styles --- */
     .popup-overlay {
       position: fixed;
       top: 0;
@@ -90,7 +105,7 @@
       max-width: 450px;
       position: relative;
       transform: scale(0.9);
-      transition: transform 0.3s;
+      transition: all 0.3s;
     }
     
     .popup-overlay.active .popup-content {
@@ -105,6 +120,7 @@
       line-height: 1;
       cursor: pointer;
       color: #666;
+       transition: color 0.3s;
     }
     
     .close-button:hover {
@@ -122,6 +138,7 @@
       margin-bottom: 8px;
       font-size: 13px;
       color: #666;
+      transition: color 0.3s;
     }
 
     #contact-form input,
@@ -134,6 +151,7 @@
       font-family: 'JetBrains Mono', monospace;
       color: #111;
       font-size: 14px;
+      transition: all 0.3s;
     }
 
     #contact-form input:focus,
@@ -151,7 +169,7 @@
       cursor: pointer;
       font-size: 14px;
       width: 100%;
-      transition: background 0.2s;
+      transition: background 0.3s, color 0.3s;
     }
      #contact-form button:hover {
       background: #333;
@@ -163,14 +181,59 @@
       text-align: center;
     }
 
+    /* --- Dark Mode Styles --- */
+    body.dark-mode {
+        background: #111;
+        color: #fafafa;
+    }
+    body.dark-mode .muted {
+        color: #999;
+    }
+    body.dark-mode a {
+        color: #fafafa;
+    }
+    body.dark-mode .theme-toggle {
+        border-color: #fafafa;
+    }
+    body.dark-mode .popup-content {
+        background: #111;
+        border: 1px solid #333;
+    }
+    body.dark-mode .close-button {
+        color: #999;
+    }
+    body.dark-mode .close-button:hover {
+        color: #fafafa;
+    }
+    body.dark-mode #contact-form label {
+        color: #999;
+    }
+    body.dark-mode #contact-form input,
+    body.dark-mode #contact-form textarea {
+        background: #111;
+        color: #fafafa;
+        border-color: #555;
+    }
+    body.dark-mode #contact-form input:focus,
+    body.dark-mode #contact-form textarea:focus {
+        border-color: #fafafa;
+    }
+    body.dark-mode #contact-form button {
+        background: #fafafa;
+        color: #111;
+    }
+    body.dark-mode #contact-form button:hover {
+        background: #ccc;
+    }
+
 
     /* Mobile adjustment */
     @media (max-width: 600px) {
-      .terminal {
+      .terminal, .theme-toggle {
         top: 14px;
-        left: 14px;
-        font-size: 13px;
       }
+      .terminal { left: 14px; font-size: 13px; }
+      .theme-toggle { right: 14px; }
       .popup-content {
         padding: 20px;
       }
@@ -178,6 +241,8 @@
   </style>
 </head>
 <body>
+
+  <div id="theme-toggle">MODE</div>
 
   <div class="terminal">
     <div>industry 5.0.1<span class="cursor">█</span></div>
@@ -257,8 +322,10 @@
       const form = event.target;
       const data = new FormData(form);
       const status = document.getElementById('form-status');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+
       status.innerHTML = "Sending...";
-      status.style.color = '#666';
+      status.style.color = isDarkMode ? '#999' : '#666';
       
       fetch(form.action, {
         method: form.method,
@@ -269,7 +336,7 @@
       }).then(response => {
         if (response.ok) {
           status.innerHTML = "Thanks for your submission!";
-          status.style.color = '#111';
+          status.style.color = isDarkMode ? '#fafafa' : '#111';
           form.reset();
           setTimeout(() => {
             popup.classList.remove('active');
@@ -293,6 +360,29 @@
 
     const form = document.getElementById('contact-form');
     form.addEventListener("submit", handleSubmit);
+
+    // --- Dark Mode Toggle ---
+    const themeToggle = document.getElementById('theme-toggle');
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        // Save preference to localStorage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+
 </script>
 
 </body>
