@@ -1,47 +1,95 @@
-<!doctype html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>로또 번호 추첨기 및 제휴 문의</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href='/style.css' rel='stylesheet'>
+  <title>industry 5.0.1</title>
+
+  <!-- Monospace coding font -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fafafa;
+      font-family: 'JetBrains Mono', monospace;
+      color: #111;
+      min-height: 100vh;
+    }
+
+    .terminal {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+    }
+
+    .muted {
+      color: #666;
+    }
+
+    .spacer {
+      height: 1.8em;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      animation: blink 1.1s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      0%   { opacity: 1; }
+      50%  { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    a {
+      color: #111;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile adjustment */
+    @media (max-width: 600px) {
+      .terminal {
+        top: 14px;
+        left: 14px;
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <main>
-      <h1>로또 번호 추첨기</h1>
-      <div class="lotto-container">
-        <div id="lotto-numbers" class="lotto-numbers"></div>
-        <button id="generate-btn" class="generate-btn">번호 생성</button>
-      </div>
-    </main>
 
-    <section class="contact-form-section">
-      <h2>제휴 문의</h2>
-      <form action="https://formspree.io/f/mwvvenol" method="POST" class="contact-form">
-        <div class="form-group">
-          <label for="name">이름:</label>
-          <input type="text" id="name" name="name" required>
-        </div>
+  <div class="terminal">
+    <div>industry 5.0.1<span class="cursor">█</span></div>
 
-        <div class="form-group">
-          <label for="email">이메일:</label>
-          <input type="email" id="email" name="email" required>
-        </div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
 
-        <div class="form-group">
-          <label for="message">문의 내용:</label>
-          <textarea id="message" name="message" rows="5" required></textarea>
-        </div>
+    <div class="muted">mullae-dong, yeongdeungpo, seoul</div>
+    <div>ochasanup something labs</div>
 
-        <button type="submit">문의 보내기</button>
-      </form>
-    </section>
+    <div class="spacer"></div>
+
+    <div>
+      <a href="https://www.instagram.com/industry5.0.1" target="_blank">
+        @industry5.0.1
+      </a>
+    </div>
   </div>
 
-  <script defer type="text/javascript" src="/main.js"></script>
 </body>
 </html>
