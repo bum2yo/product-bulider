@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <title>industry 5.0.1</title>
 
-  <!-- Monospace coding font -->
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght @300;400&display=swap" rel="stylesheet">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -22,6 +21,16 @@
       color: #111;
       min-height: 100vh;
       transition: background-color 0.3s, color 0.3s;
+      overflow: hidden; /* 눈 애니메이션을 위해 스크롤 방지 (필요시 제거 가능) */
+    }
+
+    /* 배경 캔버스 스타일 */
+    #snowCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none; /* 클릭 방해 금지 */
+      z-index: 100;
     }
 
     .terminal {
@@ -31,6 +40,7 @@
       font-size: 14px;
       line-height: 1.8;
       letter-spacing: 0.02em;
+      z-index: 1001; /* 캔버스보다 위에 배치 */
     }
 
     .muted {
@@ -74,8 +84,8 @@
         padding: 5px 8px;
         border: 1px solid #111;
         transition: all 0.3s;
-        z-index: 1001; /* Ensure it's above other elements */
-        user-select: none; /* Prevent text selection */
+        z-index: 1002;
+        user-select: none;
     }
 
     /* --- Popup styles --- */
@@ -89,7 +99,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 2000;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s, visibility 0.3s;
@@ -140,7 +150,6 @@
       margin-bottom: 8px;
       font-size: 13px;
       color: #666;
-      transition: color 0.3s;
     }
 
     #contact-form input,
@@ -216,18 +225,10 @@
         color: #fafafa;
         border-color: #555;
     }
-    body.dark-mode #contact-form input:focus,
-    body.dark-mode #contact-form textarea:focus {
-        border-color: #fafafa;
-    }
     body.dark-mode #contact-form button {
         background: #fafafa;
         color: #111;
     }
-    body.dark-mode #contact-form button:hover {
-        background: #ccc;
-    }
-
 
     /* Mobile adjustment */
     @media (max-width: 600px) {
@@ -236,13 +237,12 @@
       }
       .terminal { left: 14px; font-size: 13px; }
       .theme-toggle { right: 14px; }
-      .popup-content {
-        padding: 20px;
-      }
     }
   </style>
 </head>
 <body>
+
+  <canvas id="snowCanvas"></canvas>
 
   <div id="theme-toggle" class="theme-toggle">MODE</div>
 
@@ -267,7 +267,6 @@
     </div>
   </div>
   
-  <!-- Contact Popup -->
   <div id="contact-popup" class="popup-overlay">
       <div class="popup-content">
         <span id="close-popup-button" class="close-button">&times;</span>
@@ -289,11 +288,11 @@
     </div>
 
 <script>
+    // --- UI Logic ---
     const contactLink = document.getElementById('contact-link');
     const popup = document.getElementById('contact-popup');
     const closeButton = document.getElementById('close-popup-button');
 
-    // --- Event Listeners to Open/Close Popup ---
     contactLink.addEventListener('click', (e) => {
       e.preventDefault();
       popup.classList.add('active');
@@ -303,22 +302,17 @@
       popup.classList.remove('active');
     });
 
-    // Close popup if user clicks on the overlay
     popup.addEventListener('click', (e) => {
-      if (e.target === popup) {
-        popup.classList.remove('active');
-      }
+      if (e.target === popup) popup.classList.remove('active');
     });
     
-    // Close popup with the 'Escape' key
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape" && popup.classList.contains('active')) {
             popup.classList.remove('active');
         }
     });
 
-
-    // --- Handle Formspree Submission with AJAX ---
+    // --- Formspree Handling ---
     async function handleSubmit(event) {
       event.preventDefault();
       const form = event.target;
@@ -332,9 +326,7 @@
       fetch(form.action, {
         method: form.method,
         body: data,
-        headers: {
-          'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
       }).then(response => {
         if (response.ok) {
           status.innerHTML = "Thanks for your submission!";
@@ -345,45 +337,82 @@
             status.innerHTML = "";
           }, 2500);
         } else {
-          response.json().then(data => {
-            if (Object.hasOwn(data, 'errors')) {
-              status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-            } else {
-              status.innerHTML = "Oops! There was a problem submitting your form.";
-            }
-             status.style.color = 'red';
-          })
+          status.innerHTML = "Oops! There was a problem.";
+          status.style.color = 'red';
         }
       }).catch(error => {
-        status.innerHTML = "Oops! There was a problem submitting your form.";
+        status.innerHTML = "Oops! There was a problem.";
         status.style.color = 'red';
       });
     }
 
-    const form = document.getElementById('contact-form');
-    form.addEventListener("submit", handleSubmit);
+    const contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener("submit", handleSubmit);
 
-    // --- Dark Mode Toggle ---
+    // --- Theme Toggle ---
     const themeToggle = document.getElementById('theme-toggle');
-
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
-        
-        // Save preference to localStorage
-        if (document.body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     });
 
-    // Check for saved theme preference on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // --- Snow Animation Logic ---
+    const canvas = document.getElementById('snowCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, snowflakes;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      createSnowflakes();
+    }
+
+    function createSnowflakes() {
+      const count = Math.floor(width / 10); 
+      snowflakes = [];
+      for (let i = 0; i < count; i++) {
+        snowflakes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: Math.random() * 1 + 0.5,
+          radius: Math.random() * 1.5 + 0.5
+        });
+      }
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, width, height);
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      ctx.fillStyle = isDarkMode ? 'rgba(250, 250, 250, 0.7)' : 'rgba(17, 17, 17, 0.3)';
+
+      snowflakes.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        s.x += s.speedX;
+        s.y += s.speedY;
+
+        if (s.y > height) {
+          s.y = -5;
+          s.x = Math.random() * width;
         }
-    });
+        if (s.x > width) s.x = 0;
+        else if (s.x < 0) s.x = width;
+      });
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    loop();
 
 </script>
 
