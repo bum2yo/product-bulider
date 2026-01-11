@@ -267,6 +267,14 @@
     </div>
   </div>
   
+  <!-- Hello Popup -->
+  <div id="hello-popup" class="popup-overlay">
+      <div class="popup-content">
+        <span id="close-hello-button" class="close-button">&times;</span>
+        <h2 style="margin-bottom: 0;">안녕하세요</h2>
+      </div>
+  </div>
+  
   <div id="contact-popup" class="popup-overlay">
       <div class="popup-content">
         <span id="close-popup-button" class="close-button">&times;</span>
@@ -288,6 +296,29 @@
     </div>
 
 <script>
+    // --- Hello Popup Logic ---
+    const helloPopup = document.getElementById('hello-popup');
+    const closeHelloButton = document.getElementById('close-hello-button');
+
+    // Show immediately on load
+    window.addEventListener('load', () => {
+        helloPopup.classList.add('active');
+    });
+
+    closeHelloButton.addEventListener('click', () => {
+      helloPopup.classList.remove('active');
+    });
+
+    helloPopup.addEventListener('click', (e) => {
+      if (e.target === helloPopup) helloPopup.classList.remove('active');
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape" && helloPopup.classList.contains('active')) {
+            helloPopup.classList.remove('active');
+        }
+    });
+
     // --- UI Logic ---
     const contactLink = document.getElementById('contact-link');
     const popup = document.getElementById('contact-popup');
