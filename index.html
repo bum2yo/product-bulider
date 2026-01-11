@@ -254,6 +254,9 @@
 
     <div class="muted">mullae-dong, yeongdeungpo, seoul</div>
     <div>ochasanup something labs</div>
+    <div>
+      <a href="#" id="portfolio-link">portfolio</a>
+    </div>
 
     <div class="spacer"></div>
 
@@ -267,11 +270,15 @@
     </div>
   </div>
   
-  <!-- Hello Popup -->
-  <div id="hello-popup" class="popup-overlay">
-      <div class="popup-content">
-        <span id="close-hello-button" class="close-button">&times;</span>
-        <h2 style="margin-bottom: 0;">안녕하세요</h2>
+  <div id="portfolio-popup" class="popup-overlay">
+      <div class="popup-content" style="max-width: 600px; text-align: center;">
+        <span id="close-portfolio-button" class="close-button">&times;</span>
+        <h2>Portfolio</h2>
+        <div style="background: #eee; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; color: #666; border: 1px dashed #999;">
+             <!-- Replace this with your actual image: <img src="your-image.jpg" ...> -->
+             [Portfolio Image Placeholder]
+        </div>
+        <p class="muted">Recent works and experiments.</p>
       </div>
   </div>
   
@@ -296,50 +303,40 @@
     </div>
 
 <script>
-    // --- Hello Popup Logic ---
-    const helloPopup = document.getElementById('hello-popup');
-    const closeHelloButton = document.getElementById('close-hello-button');
-
-    // Show immediately on load
-    window.addEventListener('load', () => {
-        helloPopup.classList.add('active');
-    });
-
-    closeHelloButton.addEventListener('click', () => {
-      helloPopup.classList.remove('active');
-    });
-
-    helloPopup.addEventListener('click', (e) => {
-      if (e.target === helloPopup) helloPopup.classList.remove('active');
-    });
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && helloPopup.classList.contains('active')) {
-            helloPopup.classList.remove('active');
-        }
-    });
-
     // --- UI Logic ---
     const contactLink = document.getElementById('contact-link');
-    const popup = document.getElementById('contact-popup');
-    const closeButton = document.getElementById('close-popup-button');
+    const contactPopup = document.getElementById('contact-popup');
+    const closeContactButton = document.getElementById('close-popup-button');
+    
+    const portfolioLink = document.getElementById('portfolio-link');
+    const portfolioPopup = document.getElementById('portfolio-popup');
+    const closePortfolioButton = document.getElementById('close-portfolio-button');
 
-    contactLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      popup.classList.add('active');
-    });
+    function togglePopup(popup, action) {
+        if (action === 'open') popup.classList.add('active');
+        else popup.classList.remove('active');
+    }
 
-    closeButton.addEventListener('click', () => {
-      popup.classList.remove('active');
-    });
+    // Contact Events
+    contactLink.addEventListener('click', (e) => { e.preventDefault(); togglePopup(contactPopup, 'open'); });
+    closeContactButton.addEventListener('click', () => togglePopup(contactPopup, 'close'));
+    
+    // Portfolio Events
+    portfolioLink.addEventListener('click', (e) => { e.preventDefault(); togglePopup(portfolioPopup, 'open'); });
+    closePortfolioButton.addEventListener('click', () => togglePopup(portfolioPopup, 'close'));
 
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) popup.classList.remove('active');
+    // Global Overlay Click & Esc
+    [contactPopup, portfolioPopup].forEach(popup => {
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) togglePopup(popup, 'close');
+        });
     });
     
     document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && popup.classList.contains('active')) {
-            popup.classList.remove('active');
+        if (e.key === "Escape") {
+            [contactPopup, portfolioPopup].forEach(popup => {
+                if (popup.classList.contains('active')) togglePopup(popup, 'close');
+            });
         }
     });
 
