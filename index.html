@@ -222,18 +222,18 @@
 
     /* Mobile adjustment */
     @media (max-width: 600px) {
-      .terminal, .theme-toggle {
+      .terminal, .theme-toggle, #admin-button {
         top: 14px;
       }
       .terminal { left: 14px; font-size: 13px; }
       .theme-toggle { right: 14px; }
-      #admin-button { top: auto; bottom: 14px; left: 14px; }
+      #admin-button { right: 70px; }
     }
     
     #admin-button {
       position: fixed;
       top: 20px;
-      left: 20px;
+      right: 80px;
       cursor: pointer;
       font-size: 12px;
       padding: 5px 8px;
@@ -254,24 +254,22 @@
 
   <div id="theme-toggle" class="theme-toggle">MODE</div>
 
-      <div class="terminal" style="left: 100px;">
-    <div>industry 5.0.1<span class="cursor">█</span></div>
+  <div class="terminal">
+    <div class="line-1"></div>
     
     <div class="spacer"></div>
     <div class="spacer"></div>
     
-    <div class="muted">mullae-dong, yeongdeungpo, seoul</div>
-    <div>ochasanup something labs</div>
+    <div class="line-2 muted"></div>
+    <div class="line-3"></div>
 
     <div class="spacer"></div>
 
-    <div>
-      <a href="https://www.instagram.com/industry5.0.1" target="_blank">
-        @industry5.0.1
-      </a>
+    <div class="line-4">
+      <a href="https://www.instagram.com/industry5.0.1" target="_blank"></a>
     </div>
-     <div>
-      <a href="#" id="contact-link">contact</a>
+     <div class="line-5">
+      <a href="#" id="contact-link"></a>
     </div>
   </div>
   
@@ -296,34 +294,111 @@
     </div>
 
 <script>
-    // --- UI Logic ---
-    const contactLink = document.getElementById('contact-link');
-    const contactPopup = document.getElementById('contact-popup');
-    const closeContactButton = document.getElementById('close-popup-button');
-
-    function togglePopup(popup, action) {
-        if (action === 'open') popup.classList.add('active');
-        else popup.classList.remove('active');
+    // --- Typing Animation ---
+    function typeLine(lineElement, text, callback) {
+        let i = 0;
+        lineElement.innerHTML = ''; // Clear the line
+        const cursor = '<span class="cursor">█</span>';
+        
+        function type() {
+            if (i < text.length) {
+                lineElement.innerHTML = text.substring(0, i + 1) + cursor;
+                i++;
+                setTimeout(type, 60);
+            } else {
+                // Remove cursor from current line and add it to the next
+                lineElement.innerHTML = text;
+                if (callback) {
+                    callback();
+                }
+            }
+        }
+        type();
     }
 
-    // Contact Events
-    contactLink.addEventListener('click', (e) => { e.preventDefault(); togglePopup(contactPopup, 'open'); });
-    closeContactButton.addEventListener('click', () => togglePopup(contactPopup, 'close'));
-    
-    // Global Overlay Click & Esc
-    [contactPopup].forEach(popup => {
-        popup.addEventListener('click', (e) => {
-            if (e.target === popup) togglePopup(popup, 'close');
-        });
-    });
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape") {
-            [contactPopup].forEach(popup => {
-                if (popup.classList.contains('active')) togglePopup(popup, 'close');
-            });
+    document.addEventListener('DOMContentLoaded', () => {
+        const lines = [
+            { el: document.querySelector('.line-1'), text: 'industry 5.0.1' },
+            { el: document.querySelector('.line-2'), text: 'mullae-dong, yeongdeungpo, seoul' },
+            { el: document.querySelector('.line-3'), text: 'ochasanup something labs' },
+            { el: document.querySelector('.line-4 a'), text: '@industry5.0.1' },
+            { el: document.querySelector('.line-5 a'), text: 'contact' }
+        ];
+
+        let terminal = document.querySelector('.terminal');
+
+        function runTyping(index) {
+            if (index >= lines.length) {
+                // After all lines are typed, remove the last cursor and add a permanent one at the end
+                const lastLine = lines[lines.length-1].el;
+                if(lastLine) {
+                  lastLine.innerHTML = lastLine.innerText;
+                }
+                
+                const finalCursorLine = document.createElement('div');
+                finalCursorLine.innerHTML = '<span class="cursor">█</span>';
+                terminal.appendChild(finalCursorLine);
+
+                return;
+            }
+
+            const line = lines[index];
+            const nextLine = lines[index+1];
+            
+            if (line.el) {
+                typeLine(line.el, line.text, () => {
+                   if(nextLine && nextLine.el) {
+                     // nextLine.el.innerHTML = '<span class="cursor">█</span>';
+                   }
+                   runTyping(index + 1);
+                });
+            } else {
+                runTyping(index + 1);
+            }
         }
+
+        runTyping(0);
+        
+        // --- UI Logic ---
+        // Must re-select after typing animation is complete
+        setTimeout(() => {
+            const contactLink = document.getElementById('contact-link');
+            const contactPopup = document.getElementById('contact-popup');
+            const closeContactButton = document.getElementById('close-popup-button');
+
+            function togglePopup(popup, action) {
+                if (action === 'open') popup.classList.add('active');
+                else popup.classList.remove('active');
+            }
+            // Contact Events
+            if(contactLink) {
+              contactLink.addEventListener('click', (e) => { e.preventDefault(); togglePopup(contactPopup, 'open'); });
+            }
+            if(closeContactButton) {
+              closeContactButton.addEventListener('click', () => togglePopup(contactPopup, 'close'));
+            }
+            
+            // Global Overlay Click & Esc
+            [contactPopup].forEach(popup => {
+                if(popup) {
+                    popup.addEventListener('click', (e) => {
+                        if (e.target === popup) togglePopup(popup, 'close');
+                    });
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape") {
+                    [contactPopup].forEach(popup => {
+                        if (popup && popup.classList.contains('active')) togglePopup(popup, 'close');
+                    });
+                }
+            });
+        }, 3000); // A bit of a hack, but ensures the link is there. A better way would be a callback after all typing is done.
+
     });
+
+
 
     // --- Formspree Handling ---
     async function handleSubmit(event) {
@@ -346,7 +421,8 @@
           status.style.color = isDarkMode ? '#fafafa' : '#111';
           form.reset();
           setTimeout(() => {
-            contactPopup.classList.remove('active');
+            const contactPopup = document.getElementById('contact-popup');
+            if(contactPopup) contactPopup.classList.remove('active');
             status.innerHTML = "";
           }, 2500);
         } else {
@@ -360,14 +436,19 @@
     }
 
     const contactForm = document.getElementById('contact-form');
-    contactForm.addEventListener("submit", handleSubmit);
+    if(contactForm) {
+      contactForm.addEventListener("submit", handleSubmit);
+    }
 
     // --- Theme Toggle ---
     const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-    });
+    if(themeToggle) {
+      themeToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-mode');
+          localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      });
+    }
+
 
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
@@ -413,24 +494,26 @@
 
     // --- Admin Button ---
     const adminButton = document.getElementById('admin-button');
-    adminButton.addEventListener('click', () => {
-        const password = prompt("Enter administrator password:");
-        if (password === "1161") {
-            try {
-                let visitData = JSON.parse(localStorage.getItem('visitData'));
-                if (visitData) {
-                    alert(`Today's Visits:\n\nTotal: ${visitData.visits.desktop + visitData.visits.mobile}\nDesktop: ${visitData.visits.desktop}\nMobile: ${visitData.visits.mobile}`);
-                } else {
-                    alert("No visit data available yet.");
-                }
-            } catch (e) {
-                alert("Could not retrieve visit data.");
-                console.error("Could not retrieve visit data:", e);
-            }
-        } else if (password !== null) {
-            alert("Incorrect password.");
-        }
-    });
+    if(adminButton) {
+      adminButton.addEventListener('click', () => {
+          const password = prompt("Enter administrator password:");
+          if (password === "1161") {
+              try {
+                  let visitData = JSON.parse(localStorage.getItem('visitData'));
+                  if (visitData) {
+                      alert(`Today's Visits:\n\nTotal: ${visitData.visits.desktop + visitData.visits.mobile}\nDesktop: ${visitData.visits.desktop}\nMobile: ${visitData.visits.mobile}`);
+                  } else {
+                      alert("No visit data available yet.");
+                  }
+              } catch (e) {
+                  alert("Could not retrieve visit data.");
+                  console.error("Could not retrieve visit data:", e);
+              }
+          } else if (password !== null) {
+              alert("Incorrect password.");
+          }
+      });
+    }
 </script>
 
 </body>
