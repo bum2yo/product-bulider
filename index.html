@@ -227,19 +227,39 @@
       }
       .terminal { left: 14px; font-size: 13px; }
       .theme-toggle { right: 14px; }
+      #admin-button { top: auto; bottom: 14px; left: 14px; }
+    }
+    
+    #admin-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 5px 8px;
+      border: 1px solid #111;
+      transition: all 0.3s;
+      z-index: 1002;
+      user-select: none;
+    }
+    
+    body.dark-mode #admin-button {
+        border-color: #fafafa;
     }
   </style>
 </head>
 <body>
 
+  <div id="admin-button">Admin</div>
+
   <div id="theme-toggle" class="theme-toggle">MODE</div>
 
-  <div class="terminal">
+      <div class="terminal" style="left: 100px;">
     <div>industry 5.0.1<span class="cursor">█</span></div>
-
+    
     <div class="spacer"></div>
     <div class="spacer"></div>
-
+    
     <div class="muted">mullae-dong, yeongdeungpo, seoul</div>
     <div>ochasanup something labs</div>
 
@@ -353,6 +373,64 @@
         document.body.classList.add('dark-mode');
     }
 
+    // --- Visit Counter ---
+    function getTodayDate() {
+        const d = new Date();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    function isMobile() {
+        return /Mobi|Android/i.test(navigator.userAgent);
+    }
+
+    try {
+        let visitData = JSON.parse(localStorage.getItem('visitData'));
+        const today = getTodayDate();
+
+        if (visitData && visitData.lastVisitDate === today) {
+            // Same day, increment
+            visitData.visits[isMobile() ? 'mobile' : 'desktop']++;
+        } else {
+            // New day or first visit
+            visitData = {
+                lastVisitDate: today,
+                visits: { desktop: 0, mobile: 0 }
+            };
+            visitData.visits[isMobile() ? 'mobile' : 'desktop'] = 1;
+        }
+        localStorage.setItem('visitData', JSON.stringify(visitData));
+    } catch (e) {
+        console.error("Could not process visit count:", e);
+    }
+
+
+    // --- Admin Button ---
+    const adminButton = document.getElementById('admin-button');
+    adminButton.addEventListener('click', () => {
+        const password = prompt("Enter administrator password:");
+        if (password === "1161") {
+            try {
+                let visitData = JSON.parse(localStorage.getItem('visitData'));
+                if (visitData) {
+                    alert(`Today's Visits:\n\nTotal: ${visitData.visits.desktop + visitData.visits.mobile}\nDesktop: ${visitData.visits.desktop}\nMobile: ${visitData.visits.mobile}`);
+                } else {
+                    alert("No visit data available yet.");
+                }
+            } catch (e) {
+                alert("Could not retrieve visit data.");
+                console.error("Could not retrieve visit data:", e);
+            }
+        } else if (password !== null) {
+            alert("Incorrect password.");
+        }
+    });
 </script>
 
 </body>
