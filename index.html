@@ -18,9 +18,14 @@
     body {
       background: #fafafa;
       font-family: 'JetBrains Mono', monospace;
-      color: #111;
+      color: #fafafa; /* Changed to white for better contrast with background image */
       min-height: 100vh;
       transition: background-color 0.3s, color 0.3s;
+      background-image: url('https://i.pinimg.com/736x/92/99/26/929926448949ed3e4a8583fc878d772a.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed; /* Ensures the background stays fixed during scroll */
     }
 
     .terminal {
