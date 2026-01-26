@@ -251,9 +251,39 @@
     body.dark-mode #admin-button {
         border-color: #fafafa;
     }
+
+    .cctv-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1; /* Below terminal, theme-toggle, and admin-button */
+      width: 80%; /* Adjust as needed */
+      max-width: 1280px; /* Max width for larger screens */
+      height: 70vh; /* Adjust height based on viewport height */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black; /* Background for aspect ratio */
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+
+    .cctv-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Maintain aspect ratio and fit within container */
+    }
   </style>
 </head>
 <body>
+
+  <div class="cctv-container">
+    <video class="cctv-stream" controls autoplay loop muted>
+      <source src="rtsp://172.30.1.44:554/user=bumcctv&password=tjdqja21@@&channel=1&stream=0.sdp" type="application/x-rtsp">
+      Your browser does not support the video tag.
+    </video>
+  </div>
 
   <div id="admin-button">Admin</div>
 

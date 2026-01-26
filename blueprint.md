@@ -9,6 +9,7 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **Contact Form:** Modal popup with a form for Name, Email, and Message, handling submissions via Formspree.
 - **Responsive Design:** Adjustments for mobile viewports.
 - **Single File Structure:** All HTML, CSS, and JS contained within `index.html` for simplicity.
+- **CCTV Stream Embedding:** Embedded an RTSP CCTV stream into the page, centered and responsive.
 
 ## Change Log
 - **Initial Setup:** Created basic HTML/CSS structure.
@@ -18,8 +19,10 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **Feature:** Added "portfolio" link and corresponding image popup.
 - **Cleanup:** Removed snow animation and portfolio link/popup as per user request.
 - **Deployment:** Pushed changes to GitHub `main` branch.
+- **CCTV Stream Integration**: Added CCTV stream to `index.html` centered on the page.
 
 ## Current Plan
 - [x] Remove snow animation.
 - [x] Remove portfolio button and popup.
 - [x] Push changes to GitHub repository `bum2yo/product-bulider`.
+- [x] Embed CCTV stream in `index.html` and center it.
