@@ -6,10 +6,11 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 ## Features Implemented
 - **Terminal UI:** Minimalist text layout with a blinking cursor.
 - **Theme Toggle:** Switch between Light (default) and Dark modes, persisted via local storage.
-- **Contact Form:** Modal popup with a form for Name, Email, and Message, handling submissions via Formspree.
+- **Contact Form:** Modal popup with a form for Name, Email, and Message, ahandling submissions via Formspree.
 - **Responsive Design:** Adjustments for mobile viewports.
 - **Single File Structure:** All HTML, CSS, and JS contained within `index.html` for simplicity.
-- **Live Metallic Clock:** Displays the current time with a metallic design, centered on the page, which updates every second.
+- **Random Explosion Animation:** A CSS-based explosion animation appears at a random position on the screen every 3 seconds.
+- **Australia Map Background:** The background of the page is a map of Australia.
 
 ## Change Log
 - **Initial Setup:** Created basic HTML/CSS structure.
@@ -22,6 +23,8 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **CCTV Stream Integration**: Added CCTV stream to `index.html` centered on the page.
 - **Feature Change**: Replaced CCTV stream with a large, live-updating clock in the center of the screen.
 - **Style Enhancement**: Applied a metallic style to the live clock.
+- **Animation**: Added a random explosion animation that occurs every 3 seconds.
+- **UI Change**: Removed the clock and changed the background to a map of Australia.
 
 ## Current Plan
 - [x] Remove snow animation.
@@ -29,3 +32,5 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - [x] Push changes to GitHub repository `bum2yo/product-bulider`.
 - [x] Embed CCTV stream in `index.html` and center it.
 - [x] Remove CCTV stream and add a live clock.
+- [x] Add random explosion animation.
+- [x] Remove clock and set background to Australia map.

@@ -21,7 +21,7 @@
       color: #fafafa; /* Changed to white for better contrast with background image */
       min-height: 100vh;
       transition: background-color 0.3s, color 0.3s;
-      background-image: url('https://i.pinimg.com/736x/92/99/26/929926448949ed3e4a8583fc878d772a.jpg');
+      background-image: url('https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3B4MTU4NDk0OC1pbWFnZS1rd3Z4eG5qei5qcGc.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -252,37 +252,54 @@
         border-color: #fafafa;
     }
 
-    #clock {
+    #animation-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .explosion {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 10vw; /* Responsive font size */
-      font-weight: 700; /* Bolder for metallic look */
-      color: #b0b0b0; /* Base metallic color */
-      text-shadow:
-        0 1px 0 #555,
-        0 2px 0 #666,
-        0 3px 0 #777,
-        0 4px 0 #888,
-        0 5px 0 #999,
-        0 6px 1px rgba(0,0,0,.1),
-        0 0 5px rgba(0,0,0,.1),
-        0 1px 3px rgba(0,0,0,.3),
-        0 3px 5px rgba(0,0,0,.2),
-        0 5px 10px rgba(0,0,0,.25),
-        0 10px 10px rgba(0,0,0,.2),
-        0 20px 20px rgba(0,0,0,.15);
-      background: linear-gradient(to bottom, #d0d0d0 0%, #a0a0a0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      padding: 10px 20px; /* Add some padding to see background gradient */
+      width: 100px;
+      height: 100px;
+    }
+
+    .explosion::before,
+    .explosion::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, #ffcc00, #ff6600, #cc0000, transparent, transparent);
+      border-radius: 50%;
+      animation: explode 0.5s ease-out forwards;
+    }
+
+    .explosion::after {
+      animation-delay: 0.1s;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div id="clock"></div>
+  <div id="animation-container"></div>
 
   <div id="admin-button">Admin</div>
 
@@ -549,20 +566,26 @@
       });
     }
 
-    // --- Clock ---
-    function updateClock() {
-      const clockElement = document.getElementById('clock');
-      if (clockElement) {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
-      }
+    // --- Explosion Animation ---
+    function createExplosion() {
+      const container = document.getElementById('animation-container');
+      const explosion = document.createElement('div');
+      explosion.classList.add('explosion');
+
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 100);
+
+      explosion.style.left = `${x}px`;
+      explosion.style.top = `${y}px`;
+
+      container.appendChild(explosion);
+
+      setTimeout(() => {
+        explosion.remove();
+      }, 500); // Remove after animation ends
     }
 
-    setInterval(updateClock, 1000);
-    updateClock(); // initial call
+    setInterval(createExplosion, 3000);
 </script>
 
 </body>
