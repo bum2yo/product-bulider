@@ -251,55 +251,11 @@
     body.dark-mode #admin-button {
         border-color: #fafafa;
     }
-
-    #animation-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    .explosion {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-    }
-
-    .explosion::before,
-    .explosion::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: radial-gradient(circle, #ffcc00, #ff6600, #cc0000, transparent, transparent);
-      border-radius: 50%;
-      animation: explode 0.5s ease-out forwards;
-    }
-
-    .explosion::after {
-      animation-delay: 0.1s;
-    }
-
-    @keyframes explode {
-      0% {
-        transform: scale(0);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <div id="animation-container"></div>
+  
 
   <div id="admin-button">Admin</div>
 
@@ -566,26 +522,7 @@
       });
     }
 
-    // --- Explosion Animation ---
-    function createExplosion() {
-      const container = document.getElementById('animation-container');
-      const explosion = document.createElement('div');
-      explosion.classList.add('explosion');
 
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 100);
-
-      explosion.style.left = `${x}px`;
-      explosion.style.top = `${y}px`;
-
-      container.appendChild(explosion);
-
-      setTimeout(() => {
-        explosion.remove();
-      }, 500); // Remove after animation ends
-    }
-
-    setInterval(createExplosion, 3000);
 </script>
 
 </body>
