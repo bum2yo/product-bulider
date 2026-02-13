@@ -29,13 +29,21 @@
     }
 
     .terminal {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      font-size: 14px;
-      line-height: 1.8;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 3em; /* Increased font size for full screen display */
+      line-height: 1.5; /* Adjust line height for readability */
       letter-spacing: 0.02em;
-      z-index: 1001; /* 캔버스보다 위에 배치 */
+      z-index: 1001;
+      white-space: pre-wrap; /* Ensure text wraps correctly */
     }
 
     .muted {
@@ -264,13 +272,8 @@
   <div class="terminal">
     <div class="line-1"></div>
     
-    <div class="spacer"></div>
-    <div class="spacer"></div>
-    
-    <div class="line-2 muted"></div>
+    <div class="line-2"></div>
     <div class="line-3"></div>
-
-    <div class="spacer"></div>
 
     <div class="line-4">
       <a href="https://www.instagram.com/industry5.0.1" target="_blank"></a>
@@ -326,11 +329,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         const lines = [
             { el: document.querySelector('.line-1'), text: 'industry 5.0.1' },
-            { el: document.querySelector('.line-2'), text: 'mullae-dong, yeongdeungpo, seoul' },
-            { el: document.querySelector('.line-3'), text: 'ochasanup something labs' },
             { el: document.querySelector('.line-4 a'), text: '@industry5.0.1' },
             { el: document.querySelector('.line-5 a'), text: 'contact' }
         ];
+
+        document.querySelector('.line-2').innerHTML = 'mullae-dong, yeongdeungpo, seoul';
+        document.querySelector('.line-3').innerHTML = 'ochasanup something labs';
 
         let terminal = document.querySelector('.terminal');
 

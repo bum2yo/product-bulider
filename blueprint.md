@@ -9,7 +9,8 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **Contact Form:** Modal popup with a form for Name, Email, and Message, ahandling submissions via Formspree.
 - **Responsive Design:** Adjustments for mobile viewports.
 - **Single File Structure:** All HTML, CSS, and JS contained within `index.html` for simplicity.
-- **Random Explosion Animation:** A CSS-based explosion animation appears at a random position on the screen every 3 seconds.
+- **Removed Explosion Animation:** The random explosion animation has been removed.
+- **Address Full Screen Display:** The address information will be displayed prominently across the entire screen.
 - **Australia Map Background:** The background of the page is a map of Australia.
 
 ## Change Log
@@ -34,3 +35,5 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - [x] Remove CCTV stream and add a live clock.
 - [x] Add random explosion animation.
 - [x] Remove clock and set background to Australia map.
+- [x] Modify the CSS for the `.terminal` class in `index.html` to be full screen and centered.
+- [x] Modify the JavaScript to remove the typing animation for `line-2` and `line-3` to display the text directly.
