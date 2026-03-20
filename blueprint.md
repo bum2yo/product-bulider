@@ -26,6 +26,7 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **Style Enhancement**: Applied a metallic style to the live clock.
 - **Animation**: Added a random explosion animation that occurs every 3 seconds.
 - **UI Change**: Removed the clock and changed the background to a map of Australia.
+- **Style Change**: Changed the global font to D2Coding for better Korean coding font readability.
 
 ## Current Plan
 - [x] Remove snow animation.
@@ -37,3 +38,4 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - [x] Remove clock and set background to Australia map.
 - [x] Modify the CSS for the `.terminal` class in `index.html` to be full screen and centered.
 - [x] Modify the JavaScript to remove the typing animation for `line-2` and `line-3` to display the text directly.
+- [x] Change entire font to D2Coding.
