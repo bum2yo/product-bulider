@@ -6,6 +6,7 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 ## Features Implemented
 - **Terminal UI:** Minimalist text layout with a blinking cursor.
 - **Theme Toggle:** Switch between Light (default) and Dark modes, persisted via local storage.
+- **Interactive Guestbook:** Visitors can write a single-line message stylized as a `company.guestbook.push("")` statement, persisting in `localStorage`. Entries can be deleted via an inline `[X]` button or cleared entirely via `[all x]` button that requires a password ('0070') through a custom HTML modal.
 - **Contact Form:** Modal popup with a form for Name, Email, and Message, ahandling submissions via Formspree.
 - **Responsive Design:** Adjustments for mobile viewports.
 - **Single File Structure:** All HTML, CSS, and JS contained within `index.html` for simplicity.
@@ -27,6 +28,9 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - **Animation**: Added a random explosion animation that occurs every 3 seconds.
 - **UI Change**: Removed the clock and changed the background to a map of Australia.
 - **Style Change**: Changed the global font to D2Coding for better Korean coding font readability.
+- **Feature Change**: Completely redesigned the layout to be an IDE-style code editor with syntax highlighting and guestbook feature.
+- **Bug Fix**: Fixed terminal scrolling issue on mobile and restored hyperlink properties on guestbook re-renders.
+- **Feature Change**: Replaced native prompt with custom password modal, added `[all x]` button, increased typing speed, and changed name to "오차산업".
 
 ## Current Plan
 - [x] Remove snow animation.
@@ -39,3 +43,6 @@ This project is a minimalist, single-page website with a terminal-like aesthetic
 - [x] Modify the CSS for the `.terminal` class in `index.html` to be full screen and centered.
 - [x] Modify the JavaScript to remove the typing animation for `line-2` and `line-3` to display the text directly.
 - [x] Change entire font to D2Coding.
+- [x] Implement VS Code-like Code Editor aesthetic redesign.
+- [x] Add interactive guestbook that allows typing like code. 
+- [x] Add inline delete button to guestbook entries with a password prompt (0070).

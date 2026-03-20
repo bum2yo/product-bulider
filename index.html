@@ -9,6 +9,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    :root {
+      /* VS Code Dark Default */
+      --bg-color: #1e1e1e;
+      --text-color: #d4d4d4;
+      --sidebar-bg: #252526;
+      --tab-bg: #2d2d2d;
+      --tab-active-bg: #1e1e1e;
+      --status-bg: #007acc;
+      --status-text: #ffffff;
+      --line-number: #858585;
+      --selection: #264f78;
+      
+      /* Syntax Colors - VS Code Dark+ */
+      --keyword: #569cd6;
+      --variable: #9cdcfe;
+      --property: #9cdcfe;
+      --string: #ce9178;
+      --operator: #d4d4d4;
+      --punctuation: #d4d4d4;
+      --comment: #6a9955;
+      --function: #dcdcaa;
+      --link: #3794ff;
+
+      /* UI Outlines */
+      --border-color: #3e3e42;
+    }
+
+    /* VS Code Light Theme override */
+    body.light-mode {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --sidebar-bg: #f3f3f3;
+      --tab-bg: #ececec;
+      --tab-active-bg: #ffffff;
+      --status-bg: #007acc; /* Keep blue status bar */
+      --status-text: #ffffff;
+      --line-number: #2b91af;
+      --selection: #add6ff;
+
+      /* Syntax Colors - VS Code Light */
+      --keyword: #0000ff;
+      --variable: #001080;
+      --property: #001080;
+      --string: #a31515;
+      --operator: #000000;
+      --punctuation: #000000;
+      --comment: #008000;
+      --function: #795e26;
+      --link: #0000ff;
+      
+      --border-color: #cccccc;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -16,518 +69,878 @@
     }
 
     body {
-      background: #fafafa;
+      background: var(--bg-color);
       font-family: 'D2Coding', 'D2 coding', monospace;
-      color: #fafafa; /* Changed to white for better contrast with background image */
-      min-height: 100vh;
-      transition: background-color 0.3s, color 0.3s;
-      background-image: url('https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3B4MTU4NDk0OC1pbWFnZS1rd3Z4eG5qei5qcGc.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed; /* Ensures the background stays fixed during scroll */
-    }
-
-    .terminal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      color: var(--text-color);
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      font-size: 3em; /* Increased font size for full screen display */
-      line-height: 1.5; /* Adjust line height for readability */
-      letter-spacing: 0.02em;
-      z-index: 1001;
-      white-space: pre-wrap; /* Ensure text wraps correctly */
+      overflow: hidden; /* Prevent scrolling, act like an app */
     }
 
-    .muted {
+    /* --- LAYOUT --- */
+    .app-container {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 10px 20px;
+      font-size: 11px;
+      color: #bbbbbb;
+      letter-spacing: 1px;
+    }
+
+    body.light-mode .sidebar-header {
       color: #666;
-      transition: color 0.3s;
     }
 
-    .spacer {
-      height: 1.8em;
+    .sidebar-file {
+      padding: 5px 20px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
     }
+
+    .sidebar-file.active {
+      background: var(--border-color);
+    }
+    
+    .sidebar-file:hover {
+      background: var(--border-color);
+    }
+
+    .icon {
+      color: #f5da55;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+    
+    body.light-mode .icon {
+       color: #b59f00;
+    }
+
+    .editor-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-color);
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--sidebar-bg);
+      height: 35px;
+    }
+
+    .tab {
+      background: var(--tab-bg);
+      padding: 8px 15px;
+      font-size: 13px;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--tab-active-bg);
+      border-top: 1px solid var(--keyword); /* A nice accent line */
+    }
+
+    .code-area {
+      flex: 1;
+      display: flex;
+      padding: 15px 0;
+      overflow: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .line-numbers {
+      padding: 0 15px 0 10px;
+      text-align: right;
+      color: var(--line-number);
+      user-select: none;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .line-number-cell {
+      height: 24px;
+    }
+
+    .code-content {
+      flex: 1;
+      padding-left: 15px;
+      white-space: pre-wrap; /* Ensure text wraps */
+    }
+
+    .code-line {
+      min-height: 24px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* --- SYNTAX HIGHLIGHTING --- */
+    .keyword { color: var(--keyword); }
+    .variable { color: var(--variable); }
+    .property { color: var(--property); }
+    .string { color: var(--string); }
+    .operator { color: var(--operator); }
+    .punctuation { color: var(--punctuation); }
+    .comment { color: var(--comment); }
+    .function { color: var(--function); }
 
     .cursor {
       display: inline-block;
       width: 8px;
-      animation: blink 1.1s steps(1) infinite;
+      height: 1em;
+      background-color: var(--text-color);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
     }
 
     @keyframes blink {
-      0%   { opacity: 1; }
-      50%  { opacity: 0; }
-      100% { opacity: 1; }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
-    a {
-      color: #111;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    a:hover {
+    /* Links appearing in code */
+    a.code-link {
+      color: var(--string);
       text-decoration: underline;
-    }
-    
-    /* --- Dark Mode Toggle --- */
-    .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        cursor: pointer;
-        font-size: 12px;
-        padding: 5px 8px;
-        border: 1px solid #111;
-        transition: all 0.3s;
-        z-index: 1002;
-        user-select: none;
+      text-decoration-color: transparent;
+      transition: text-decoration-color 0.2s;
     }
 
-    /* --- Popup styles --- */
-    .popup-overlay {
+    a.code-link:hover {
+      text-decoration-color: var(--string);
+      cursor: pointer;
+    }
+
+    /* --- INTERACTIVE INPUT --- */
+    .editor-input {
+      outline: none;
+      min-width: 10px;
+      display: inline-block;
+      white-space: pre;
+    }
+    .editor-input:empty::before {
+      content: attr(placeholder);
+      color: var(--comment); 
+      pointer-events: none;
+      font-style: italic;
+    }
+    .editor-input:focus {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+    body.light-mode .editor-input:focus {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .delete-btn {
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .delete-btn:hover {
+      opacity: 1;
+      color: #ff5f56 !important;
+    }
+
+    /* --- STATUS BAR --- */
+    .status-bar {
+      height: 22px;
+      background: var(--status-bg);
+      color: var(--status-text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .status-item {
+      cursor: pointer;
+    }
+
+    .status-item:hover {
+      opacity: 0.8;
+    }
+
+    /* --- COMMAND PALETTE (Contact Form) --- */
+    .command-palette-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.4);
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       z-index: 2000;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
+      transition: opacity 0.2s, visibility 0.2s;
     }
 
-    .popup-overlay.active {
+    .command-palette-overlay.active {
       opacity: 1;
       visibility: visible;
     }
 
-    .popup-content {
-      background: #fafafa;
-      padding: 25px 30px;
+    .command-palette {
+      background: var(--sidebar-bg);
+      color: var(--text-color);
       width: 90%;
-      max-width: 450px;
-      position: relative;
-      transform: scale(0.9);
-      transition: all 0.3s;
-    }
-    
-    .popup-overlay.active .popup-content {
-        transform: scale(1);
-    }
-
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      line-height: 1;
-      cursor: pointer;
-      color: #666;
-       transition: color 0.3s;
-    }
-    
-    .close-button:hover {
-        color: #111;
+      max-width: 600px;
+      margin-top: 10vh;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      padding: 10px;
+      transform: translateY(-20px);
+      transition: transform 0.2s;
     }
 
-    /* Form styles */
-    .popup-content h2 {
-      margin-bottom: 20px;
-      font-weight: 300;
+    .command-palette-overlay.active .command-palette {
+      transform: translateY(0);
+    }
+
+    .command-input-wrapper {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .command-input-wrapper span {
+      margin: 0 10px;
+      color: var(--keyword);
+    }
+
+    .command-input-wrapper input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-family: 'D2Coding', 'D2 coding', monospace;
+      font-size: 16px;
+      outline: none;
     }
 
     #contact-form label {
       display: block;
-      margin-bottom: 8px;
+      margin: 10px 0 5px;
       font-size: 13px;
-      color: #666;
+      color: var(--keyword);
     }
 
     #contact-form input,
     #contact-form textarea {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      background: #fafafa;
-      border: 1px solid #ccc;
-      font-family: 'D2Coding', 'D2 coding', monospace;
-      color: #111;
-      font-size: 14px;
-      transition: all 0.3s;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      font-family: inherit;
+      padding: 8px;
+      border-radius: 3px;
     }
 
     #contact-form input:focus,
     #contact-form textarea:focus {
-      outline: none;
-      border-color: #111;
+      outline: 1px solid var(--keyword);
     }
 
     #contact-form button {
-      background: #111;
-      color: #fafafa;
-      border: none;
-      padding: 12px 15px;
-      font-family: 'D2Coding', 'D2 coding', monospace;
-      cursor: pointer;
-      font-size: 14px;
+      margin-top: 15px;
       width: 100%;
-      transition: background 0.3s, color 0.3s;
+      background: var(--status-bg);
+      color: var(--status-text);
+      border: none;
+      padding: 10px;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 3px;
     }
-     #contact-form button:hover {
-      background: #333;
-     }
+
+    #contact-form button:hover {
+      opacity: 0.9;
+    }
 
     #form-status {
-      margin-top: 15px;
-      font-size: 14px;
+      margin-top: 10px;
       text-align: center;
+      font-size: 13px;
     }
 
-    /* --- Dark Mode Styles --- */
-    body.dark-mode {
-        background: #111;
-        color: #fafafa;
-    }
-    body.dark-mode .muted {
-        color: #999;
-    }
-    body.dark-mode a {
-        color: #fafafa;
-    }
-    body.dark-mode .theme-toggle {
-        border-color: #fafafa;
-    }
-    body.dark-mode .popup-content {
-        background: #111;
-        border: 1px solid #333;
-    }
-    body.dark-mode .close-button {
-        color: #999;
-    }
-    body.dark-mode .close-button:hover {
-        color: #fafafa;
-    }
-    body.dark-mode #contact-form label {
-        color: #999;
-    }
-    body.dark-mode #contact-form input,
-    body.dark-mode #contact-form textarea {
-        background: #111;
-        color: #fafafa;
-        border-color: #555;
-    }
-    body.dark-mode #contact-form button {
-        background: #fafafa;
-        color: #111;
-    }
-
-    /* Mobile adjustment */
-    @media (max-width: 600px) {
-      .terminal, .theme-toggle, #admin-button {
-        top: 14px;
-      }
-      .terminal { left: 14px; font-size: 13px; }
-      .theme-toggle { right: 14px; }
-      #admin-button { right: 70px; }
-    }
-    
-    #admin-button {
-      position: fixed;
-      top: 20px;
-      right: 80px;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 5px 8px;
-      border: 1px solid #111;
-      transition: all 0.3s;
-      z-index: 1002;
-      user-select: none;
-    }
-    
-    body.dark-mode #admin-button {
-        border-color: #fafafa;
+    /* Mobile handling */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .code-area { font-size: 13px; }
+      .status-bar { font-size: 10px; }
     }
   </style>
 </head>
 <body>
 
-  
-
-  <div id="admin-button">Admin</div>
-
-  <div id="theme-toggle" class="theme-toggle">MODE</div>
-
-  <div class="terminal">
-    <div class="line-1"></div>
-    
-    <div class="line-2"></div>
-    <div class="line-3"></div>
-
-    <div class="line-4">
-      <a href="https://www.instagram.com/industry5.0.1" target="_blank"></a>
-    </div>
-     <div class="line-5">
-      <a href="#" id="contact-link"></a>
-    </div>
-  </div>
-  
-  <div id="contact-popup" class="popup-overlay">
-      <div class="popup-content">
-        <span id="close-popup-button" class="close-button">&times;</span>
-        <h2>Contact Us</h2>
-        <form id="contact-form" action="https://formspree.io/f/mwvvenol" method="POST">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" required>
-          
-          <label for="email">Email</label>
-          <input type="email" id="email" name="_replyto" required>
-          
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required></textarea>
-          
-          <button type="submit">Send Message</button>
-        </form>
-        <div id="form-status"></div>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">EXPLORER</div>
+      <div class="sidebar-file active">
+        <span class="icon">JS</span> index.js
       </div>
     </div>
+    
+    <div class="editor-main">
+      <div class="tabs">
+        <div class="tab active"><span class="icon">JS</span> index.js</div>
+      </div>
+      
+      <div class="code-area" id="code-area-container">
+        <div class="line-numbers" id="line-numbers">
+          <!-- Line numbers inserted by JS -->
+        </div>
+        <div class="code-content" id="code-content">
+          <!-- Code inserted by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="status-item">main*</span>
+      <span class="status-item" id="admin-trigger">❌ 0 ⚠️ 0</span>
+      <span class="status-item" id="clear-all-trigger">[all x]</span>
+    </div>
+    <div class="status-right">
+      <span class="status-item">Ln 12, Col 1</span>
+      <span class="status-item">UTF-8</span>
+      <span class="status-item">JavaScript</span>
+      <span class="status-item" id="theme-toggle">Theme: Dark</span>
+    </div>
+  </div>
+
+  <!-- Contact Modal designed as Command Palette -->
+  <div id="contact-popup" class="command-palette-overlay">
+    <div class="command-palette">
+      <div class="command-input-wrapper">
+        <span>></span> <input type="text" value="System.execute('Contact Us')" readonly>
+      </div>
+      <form id="contact-form" action="https://formspree.io/f/mwvvenol" method="POST">
+        <label for="name">const name =</label>
+        <input type="text" id="name" name="name" placeholder="'Your Name'" required>
+        
+        <label for="email">const email =</label>
+        <input type="email" id="email" name="_replyto" placeholder="'your@email.com'" required>
+        
+        <label for="message">const message =</label>
+        <textarea id="message" name="message" rows="4" placeholder="`Hello there!`" required></textarea>
+        
+        <button type="submit">await form.submit()</button>
+      </form>
+      <div id="form-status"></div>
+    </div>
+  </div>
+
+  <!-- Delete Modal / Password Prompt -->
+  <div id="password-popup" class="command-palette-overlay">
+    <div class="command-palette">
+      <div class="command-input-wrapper">
+        <span>></span> <input type="text" value="System.execute('Delete Message')" readonly>
+      </div>
+      <form id="password-form">
+        <label for="delete-password">const password =</label>
+        <input type="password" id="delete-password" placeholder="'Enter password...'" required>
+        <button type="submit">await authenticate()</button>
+      </form>
+      <div id="password-status"></div>
+    </div>
+  </div>
 
 <script>
-    // --- Typing Animation ---
-    function typeLine(lineElement, text, callback) {
-        let i = 0;
-        lineElement.innerHTML = ''; // Clear the line
-        const cursor = '<span class="cursor">█</span>';
-        
-        function type() {
-            if (i < text.length) {
-                lineElement.innerHTML = text.substring(0, i + 1) + cursor;
-                i++;
-                setTimeout(type, 60);
-            } else {
-                // Remove cursor from current line and add it to the next
-                lineElement.innerHTML = text;
-                if (callback) {
-                    callback();
-                }
-            }
-        }
-        type();
-    }
+  // --- Tokenized Code to Type Out ---
+  const rawCodeLines = [
+    [ {text: "/**", cl: "comment"} ],
+    [ {text: " * ochasanup something labs", cl: "comment"} ],
+    [ {text: " */", cl: "comment"} ],
+    [ {text: "const ", cl: "keyword"}, {text: "company ", cl: "variable"}, {text: "= ", cl: "operator"}, {text: "{", cl: "punctuation"} ],
+    [ {text: "  ", cl: ""}, {text: "name: ", cl: "property"}, {text: "\"오차산업\",", cl: "string"} ],
+    [ {text: "  ", cl: ""}, {text: "location: ", cl: "property"}, {text: "\"mullae-dong, yeongdeungpo, seoul\",", cl: "string"} ],
+    [ {text: "  ", cl: ""}, {text: "social: ", cl: "property"}, {text: "{", cl: "punctuation"} ],
+    [ {text: "    ", cl: ""}, {text: "instagram: ", cl: "property"}, {text: "\"@industry5.0.1\"", cl: "string", link: "https://www.instagram.com/industry5.0.1"} ],
+    [ {text: "  ", cl: ""}, {text: "},", cl: "punctuation"} ],
+    [ {text: "  ", cl: ""}, {text: "actions: ", cl: "property"}, {text: "{", cl: "punctuation"} ],
+    [ {text: "    ", cl: ""}, {text: "messageUs: ", cl: "function"}, {text: "() ", cl: "punctuation"}, {text: "=> ", cl: "keyword"}, {text: "dispatch(", cl: "function"}, {text: "\"contact\"", cl: "string", link: "#", id: "contact-link"}, {text: ")", cl: "punctuation"} ],
+    [ {text: "  ", cl: ""}, {text: "}", cl: "punctuation"} ],
+    [ {text: "};", cl: "punctuation"} ],
+    [ {text: "", cl: ""} ] // Blank line
+  ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const lines = [
-            { el: document.querySelector('.line-1'), text: 'industry 5.0.1' },
-            { el: document.querySelector('.line-4 a'), text: '@industry5.0.1' },
-            { el: document.querySelector('.line-5 a'), text: 'contact' }
-        ];
+  const codeContent = document.getElementById('code-content');
+  const lineNumbers = document.getElementById('line-numbers');
+  const codeAreaContainer = document.getElementById('code-area-container');
+  
+  let currentLineIndex = 0;
+  let currentTokenIndex = 0;
+  let currentCharIndex = 0;
+  
+  let currentLineDiv = null;
+  let currentTokenSpan = null;
+  let activeCursor = null;
 
-        document.querySelector('.line-2').innerHTML = 'mullae-dong, yeongdeungpo, seoul';
-        document.querySelector('.line-3').innerHTML = 'ochasanup something labs';
+  function createCursor() {
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    return cursor;
+  }
 
-        let terminal = document.querySelector('.terminal');
+  function startTyping() {
+    codeContent.innerHTML = '';
+    lineNumbers.innerHTML = '';
+    typeNextCharacter();
+  }
 
-        function runTyping(index) {
-            if (index >= lines.length) {
-                // After all lines are typed, remove the last cursor and add a permanent one at the end
-                const lastLine = lines[lines.length-1].el;
-                if(lastLine) {
-                  lastLine.innerHTML = lastLine.innerText;
-                }
-                
-                const finalCursorLine = document.createElement('div');
-                finalCursorLine.innerHTML = '<span class="cursor">█</span>';
-                terminal.appendChild(finalCursorLine);
-
-                return;
-            }
-
-            const line = lines[index];
-            const nextLine = lines[index+1];
-            
-            if (line.el) {
-                typeLine(line.el, line.text, () => {
-                   if(nextLine && nextLine.el) {
-                     // nextLine.el.innerHTML = '<span class="cursor">█</span>';
-                   }
-                   runTyping(index + 1);
-                });
-            } else {
-                runTyping(index + 1);
-            }
-        }
-
-        runTyping(0);
-        
-        // --- UI Logic ---
-        // Must re-select after typing animation is complete
-        setTimeout(() => {
-            const contactLink = document.getElementById('contact-link');
-            const contactPopup = document.getElementById('contact-popup');
-            const closeContactButton = document.getElementById('close-popup-button');
-
-            function togglePopup(popup, action) {
-                if (action === 'open') popup.classList.add('active');
-                else popup.classList.remove('active');
-            }
-            // Contact Events
-            if(contactLink) {
-              contactLink.addEventListener('click', (e) => { e.preventDefault(); togglePopup(contactPopup, 'open'); });
-            }
-            if(closeContactButton) {
-              closeContactButton.addEventListener('click', () => togglePopup(contactPopup, 'close'));
-            }
-            
-            // Global Overlay Click & Esc
-            [contactPopup].forEach(popup => {
-                if(popup) {
-                    popup.addEventListener('click', (e) => {
-                        if (e.target === popup) togglePopup(popup, 'close');
-                    });
-                }
-            });
-            
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape") {
-                    [contactPopup].forEach(popup => {
-                        if (popup && popup.classList.contains('active')) togglePopup(popup, 'close');
-                    });
-                }
-            });
-        }, 3000); // A bit of a hack, but ensures the link is there. A better way would be a callback after all typing is done.
-
-    });
-
-
-
-    // --- Formspree Handling ---
-    async function handleSubmit(event) {
-      event.preventDefault();
-      const form = event.target;
-      const data = new FormData(form);
-      const status = document.getElementById('form-status');
-      const isDarkMode = document.body.classList.contains('dark-mode');
-
-      status.innerHTML = "Sending...";
-      status.style.color = isDarkMode ? '#999' : '#666';
+  function typeNextCharacter() {
+    // If all base lines are typed
+    if (currentLineIndex >= rawCodeLines.length) {
+      if (activeCursor) activeCursor.remove();
       
-      fetch(form.action, {
-        method: form.method,
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      }).then(response => {
-        if (response.ok) {
-          status.innerHTML = "Thanks for your submission!";
-          status.style.color = isDarkMode ? '#fafafa' : '#111';
-          form.reset();
-          setTimeout(() => {
-            const contactPopup = document.getElementById('contact-popup');
-            if(contactPopup) contactPopup.classList.remove('active');
-            status.innerHTML = "";
-          }, 2500);
+      // Render Guestbook Components
+      renderGuestbook();
+      renderGuestbookInput();
+
+      // Setup UI hooks after typing
+      setupHooks();
+      scrollToBottom();
+      return;
+    }
+
+    const currentLineData = rawCodeLines[currentLineIndex];
+
+    // If starting a new line
+    if (currentTokenIndex === 0 && currentCharIndex === 0) {
+      // Add line number
+      const lnDiv = document.createElement('div');
+      lnDiv.className = 'line-number-cell';
+      lnDiv.textContent = currentLineIndex + 1;
+      lineNumbers.appendChild(lnDiv);
+
+      // Create line div
+      currentLineDiv = document.createElement('div');
+      currentLineDiv.className = 'code-line';
+      codeContent.appendChild(currentLineDiv);
+    }
+
+    // If starting a new token
+    if (currentCharIndex === 0) {
+      const tokenData = currentLineData[currentTokenIndex];
+      if (tokenData && tokenData.link) {
+        currentTokenSpan = document.createElement('a');
+        currentTokenSpan.className = `code-link ${tokenData.cl}`;
+        if(tokenData.id) currentTokenSpan.id = tokenData.id;
+        if(tokenData.link !== '#') {
+           currentTokenSpan.href = tokenData.link;
+           currentTokenSpan.target = '_blank';
         } else {
-          status.innerHTML = "Oops! There was a problem.";
-          status.style.color = 'red';
+           currentTokenSpan.href = '#';
         }
-      }).catch(error => {
-        status.innerHTML = "Oops! There was a problem.";
-        status.style.color = 'red';
+      } else {
+        currentTokenSpan = document.createElement('span');
+        currentTokenSpan.className = tokenData ? tokenData.cl : '';
+      }
+      currentLineDiv.appendChild(currentTokenSpan);
+    }
+
+    const tokenData = currentLineData[currentTokenIndex];
+    if (tokenData && tokenData.text.length > 0) {
+        // Append one character
+        currentTokenSpan.textContent += tokenData.text[currentCharIndex];
+        currentCharIndex++;
+
+        // Add cursor
+        if (activeCursor) activeCursor.remove();
+        activeCursor = createCursor();
+        currentLineDiv.appendChild(activeCursor);
+
+        // Advance indices
+        if (currentCharIndex >= tokenData.text.length) {
+            currentCharIndex = 0;
+            currentTokenIndex++;
+        }
+        
+        // Auto scroll down while typing
+        scrollToBottom();
+
+        // Faster typing speed
+        setTimeout(typeNextCharacter, Math.random() * 10 + 2);
+    } else {
+        // Empty token / blank line
+        if (activeCursor) activeCursor.remove();
+        activeCursor = createCursor();
+        currentLineDiv.appendChild(activeCursor);
+        
+        // Line complete
+        currentTokenIndex = 0;
+        currentCharIndex = 0;
+        currentLineIndex++;
+        
+        setTimeout(typeNextCharacter, 30);
+    }
+  }
+
+  // Kick off animation
+  setTimeout(startTyping, 500);
+
+  // --- Guestbook Logic ---
+  
+  function addDOMLine(tokens) {
+      const lnDiv = document.createElement('div');
+      lnDiv.className = 'line-number-cell';
+      lnDiv.textContent = lineNumbers.children.length + 1;
+      lineNumbers.appendChild(lnDiv);
+
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'code-line';
+      
+      tokens.forEach(t => {
+          let el;
+          if (t.link) {
+              el = document.createElement('a');
+              el.className = `code-link ${t.cl || ''}`;
+              if (t.id) el.id = t.id;
+              if (t.link !== '#') {
+                  el.href = t.link;
+                  el.target = '_blank';
+              } else {
+                  el.href = '#';
+              }
+          } else {
+              el = document.createElement('span');
+              el.className = t.cl || '';
+          }
+          el.innerHTML = t.html || t.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          lineDiv.appendChild(el);
       });
-    }
+      codeContent.appendChild(lineDiv);
+  }
 
-    const contactForm = document.getElementById('contact-form');
-    if(contactForm) {
-      contactForm.addEventListener("submit", handleSubmit);
-    }
+  function renderGuestbook() {
+      const messages = JSON.parse(localStorage.getItem('guestbook')) || [
+          "Nice to meet you!",
+          "This terminal looks sick."
+      ];
+      
+      if (messages.length > 0) {
+          addDOMLine([ {text: "// Guestbook entries", cl: "comment"} ]);
+          addDOMLine([ {text: "company", cl: "variable"}, {text: ".", cl: "punctuation"}, {text: "guestbook ", cl: "property"}, {text: "= ", cl: "operator"}, {text: "[", cl: "punctuation"} ]);
+          
+          messages.forEach((msg, idx) => {
+              addDOMLine([ 
+                  {text: "  ", cl: ""}, 
+                  {text: `"${msg}",`, cl: "string"},
+                  {html: `<span class="comment delete-btn" data-index="${idx}" style="cursor:pointer; margin-left: 10px;" title="Delete message">[X]</span>`}
+              ]);
+          });
+          
+          addDOMLine([ {text: "];", cl: "punctuation"} ]);
+          addDOMLine([ {text: "", cl: ""} ]); // blank
+      }
+  }
 
-    // --- Theme Toggle ---
-    const themeToggle = document.getElementById('theme-toggle');
-    if(themeToggle) {
-      themeToggle.addEventListener('click', () => {
-          document.body.classList.toggle('dark-mode');
-          localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+  function renderGuestbookInput() {
+      addDOMLine([ {text: "// Type your message here and press Enter to save:", cl: "comment"} ]);
+      
+      const lnDiv = document.createElement('div');
+      lnDiv.className = 'line-number-cell';
+      lnDiv.textContent = lineNumbers.children.length + 1;
+      lineNumbers.appendChild(lnDiv);
+
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'code-line';
+      
+      // Constructing interactive line
+      lineDiv.innerHTML = `<span class="variable">company</span><span class="punctuation">.</span><span class="property">guestbook</span><span class="punctuation">.</span><span class="function">push</span><span class="punctuation">(</span><span class="string">"</span><span contenteditable="true" class="string editor-input" id="guest-input" placeholder="Hello there!"></span><span class="string">"</span><span class="punctuation">);</span><span class="cursor" id="idle-cursor"></span>`;
+      
+      codeContent.appendChild(lineDiv);
+      
+      const input = document.getElementById('guest-input');
+      const idleCursor = document.getElementById('idle-cursor');
+      
+      // Hide simulated cursor when focused
+      input.addEventListener('focus', () => {
+          if(idleCursor) idleCursor.style.display = 'none';
       });
+      input.addEventListener('blur', () => {
+          if(idleCursor) idleCursor.style.display = 'inline-block';
+      });
+      input.addEventListener('input', () => {
+          scrollToBottom();
+      });
+
+      // Handle Submit
+      input.addEventListener('keydown', (e) => {
+          if (e.isComposing || e.keyCode === 229) {
+              return;
+          }
+          if (e.key === 'Enter') {
+              e.preventDefault();
+              const text = input.innerText.trim();
+              if (text) {
+                  let messages = JSON.parse(localStorage.getItem('guestbook')) || [
+                      "Nice to meet you!",
+                      "This terminal looks sick."
+                  ];
+                  messages.push(text);
+                  localStorage.setItem('guestbook', JSON.stringify(messages));
+                  
+                  reRenderAllFast();
+              }
+          }
+      });
+  }
+
+  function reRenderAllFast() {
+      // Clear
+      codeContent.innerHTML = '';
+      lineNumbers.innerHTML = '';
+      
+      // Render base instantly
+      rawCodeLines.forEach(line => addDOMLine(line));
+      
+      // Render dynamic
+      renderGuestbook();
+      renderGuestbookInput();
+      
+      // Hookups
+      setupHooks();
+      
+      // Refocus and move cursor to end
+      const input = document.getElementById('guest-input');
+      if(input) {
+          input.focus();
+          scrollToBottom();
+      }
+  }
+  
+  function scrollToBottom() {
+      codeAreaContainer.scrollTop = codeAreaContainer.scrollHeight;
+  }
+
+  let deleteIdxToProcess = -1;
+
+  // --- UI Hooks ---
+  function setupHooks() {
+    const contactLink = document.getElementById('contact-link');
+    const contactPopup = document.getElementById('contact-popup');
+    
+    if(contactLink) {
+        // Need to attach fresh because reRender clears DOM
+        contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            contactPopup.classList.add('active');
+        });
     }
 
-
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
+    if(!codeContent.dataset.hooked) {
+        codeContent.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                deleteIdxToProcess = e.target.getAttribute('data-index');
+                const passwordPopup = document.getElementById('password-popup');
+                passwordPopup.classList.add('active');
+                document.getElementById('password-status').innerHTML = "";
+                document.getElementById('delete-password').value = '';
+                document.getElementById('delete-password').focus();
+            }
+        });
+        codeContent.dataset.hooked = 'true';
     }
 
-    // --- Visit Counter ---
-    function getTodayDate() {
+    // Attach overlay close if not attached (prevent duplicate using simple flag)
+    if(!contactPopup.dataset.hooked) {
+        contactPopup.addEventListener('click', (e) => {
+            if(e.target === contactPopup) {
+                contactPopup.classList.remove('active');
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if(e.key === "Escape") {
+                contactPopup.classList.remove('active');
+            }
+        });
+        contactPopup.dataset.hooked = 'true';
+    }
+  }
+
+  // --- Formspree Handling ---
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const data = new FormData(form);
+    const status = document.getElementById('form-status');
+    
+    status.innerHTML = "// Sending payload...";
+    status.style.color = "var(--keyword)";
+    
+    fetch(form.action, {
+      method: form.method,
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if (response.ok) {
+        status.innerHTML = "// Submission successful: Status 200 OK";
+        status.style.color = "var(--string)";
+        form.reset();
+        setTimeout(() => {
+          document.getElementById('contact-popup').classList.remove('active');
+          status.innerHTML = "";
+        }, 2000);
+      } else {
+        status.innerHTML = "// Error: Submission failed";
+        status.style.color = "#ff5f56";
+      }
+    }).catch(error => {
+      status.innerHTML = "// Error: Network failure";
+      status.style.color = "#ff5f56";
+    });
+  }
+
+  document.getElementById('contact-form').addEventListener('submit', handleSubmit);
+
+  const passwordPopup = document.getElementById('password-popup');
+  const passwordForm = document.getElementById('password-form');
+  
+  if (passwordForm) {
+      passwordForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const pwd = document.getElementById('delete-password').value;
+          const status = document.getElementById('password-status');
+          if (pwd === "0070") {
+              let messages = JSON.parse(localStorage.getItem('guestbook')) || [];
+              if (typeof deleteIdxToProcess !== 'undefined') {
+                  if (deleteIdxToProcess === 'ALL') {
+                      messages = [];
+                  } else if (deleteIdxToProcess > -1) {
+                      messages.splice(deleteIdxToProcess, 1);
+                  }
+                  localStorage.setItem('guestbook', JSON.stringify(messages));
+                  reRenderAllFast();
+              }
+              passwordPopup.classList.remove('active');
+              status.innerHTML = "";
+              deleteIdxToProcess = -1;
+          } else {
+              status.innerHTML = "// Error: Incorrect password";
+              status.style.color = "#ff5f56";
+          }
+      });
+  }
+
+  if (passwordPopup) {
+      passwordPopup.addEventListener('click', (e) => {
+          if(e.target === passwordPopup) {
+              passwordPopup.classList.remove('active');
+          }
+      });
+      document.addEventListener('keydown', (e) => {
+          if(e.key === "Escape") {
+              passwordPopup.classList.remove('active');
+          }
+      });
+  }
+
+  const clearAllTrigger = document.getElementById('clear-all-trigger');
+  if (clearAllTrigger) {
+      clearAllTrigger.addEventListener('click', () => {
+          deleteIdxToProcess = 'ALL';
+          const passwordPopup = document.getElementById('password-popup');
+          if (passwordPopup) {
+              passwordPopup.classList.add('active');
+              document.getElementById('password-status').innerHTML = "";
+              document.getElementById('delete-password').value = '';
+              document.getElementById('delete-password').focus();
+          }
+      });
+  }
+
+  const themeToggleUrl = document.getElementById('theme-toggle');
+  themeToggleUrl.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('editor-theme', isLight ? 'light' : 'dark');
+      themeToggleUrl.textContent = isLight ? 'Theme: Light' : 'Theme: Dark';
+  });
+
+  if (localStorage.getItem('editor-theme') === 'light') {
+      document.body.classList.add('light-mode');
+      themeToggleUrl.textContent = 'Theme: Light';
+  }
+
+  const adminTrigger = document.getElementById('admin-trigger');
+  adminTrigger.addEventListener('click', () => {
+      const password = prompt("sudo su admin - Enter password:");
+      if (password === "1161") {
+          try {
+              let visitData = JSON.parse(localStorage.getItem('visitData'));
+              if (visitData) {
+                  alert(`Access Granted.\n\nToday's Traffic:\nTotal: ${visitData.visits.desktop + visitData.visits.mobile}\nDesktop: ${visitData.visits.desktop}\nMobile: ${visitData.visits.mobile}`);
+              } else {
+                  alert("Access Granted. No traffic data logged yet.");
+              }
+          } catch (e) {
+              alert("Error retrieving localized database.");
+          }
+      } else if (password !== null) {
+          alert("Permission denied.");
+      }
+  });
+  
+  function getTodayDate() {
         const d = new Date();
         let month = '' + (d.getMonth() + 1);
         let day = '' + d.getDate();
         const year = d.getFullYear();
-
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
-
         return [year, month, day].join('-');
-    }
-
-    function isMobile() {
+  }
+  function isMobile() {
         return /Mobi|Android/i.test(navigator.userAgent);
-    }
-
-    try {
+  }
+  try {
         let visitData = JSON.parse(localStorage.getItem('visitData'));
         const today = getTodayDate();
-
         if (visitData && visitData.lastVisitDate === today) {
-            // Same day, increment
             visitData.visits[isMobile() ? 'mobile' : 'desktop']++;
         } else {
-            // New day or first visit
-            visitData = {
-                lastVisitDate: today,
-                visits: { desktop: 0, mobile: 0 }
-            };
+            visitData = { lastVisitDate: today, visits: { desktop: 0, mobile: 0 } };
             visitData.visits[isMobile() ? 'mobile' : 'desktop'] = 1;
         }
         localStorage.setItem('visitData', JSON.stringify(visitData));
-    } catch (e) {
-        console.error("Could not process visit count:", e);
-    }
-
-
-    // --- Admin Button ---
-    const adminButton = document.getElementById('admin-button');
-    if(adminButton) {
-      adminButton.addEventListener('click', () => {
-          const password = prompt("Enter administrator password:");
-          if (password === "1161") {
-              try {
-                  let visitData = JSON.parse(localStorage.getItem('visitData'));
-                  if (visitData) {
-                      alert(`Today's Visits:\n\nTotal: ${visitData.visits.desktop + visitData.visits.mobile}\nDesktop: ${visitData.visits.desktop}\nMobile: ${visitData.visits.mobile}`);
-                  } else {
-                      alert("No visit data available yet.");
-                  }
-              } catch (e) {
-                  alert("Could not retrieve visit data.");
-                  console.error("Could not retrieve visit data:", e);
-              }
-          } else if (password !== null) {
-              alert("Incorrect password.");
-          }
-      });
-    }
-
+  } catch(e) {}
 
 </script>
-
 </body>
 </html>
