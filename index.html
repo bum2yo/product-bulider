@@ -480,7 +480,41 @@
     </div>
   </div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
+  // --- Firebase Initialization ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyCpJtkfZrvCDAobdbYzcUXWUC4mmcQs1gI",
+    authDomain: "industry501-test.firebaseapp.com",
+    databaseURL: "https://industry501-test-default-rtdb.firebaseio.com",
+    projectId: "industry501-test",
+    storageBucket: "industry501-test.firebasestorage.app",
+    messagingSenderId: "721426182006",
+    appId: "1:721426182006:web:cfa80203d440a972bd9457",
+    measurementId: "G-G3YN6E6HL3"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
+  let globalMessages = [];
+  
+  // Listen for real-time guestbook updates
+  db.ref('guestbook').on('value', (snapshot) => {
+      const data = snapshot.val();
+      globalMessages = [];
+      if (data) {
+          Object.keys(data).forEach(key => {
+              globalMessages.push({ id: key, text: data[key].text });
+          });
+      }
+      
+      // If typing animation is finished, re-render
+      if (currentLineIndex >= rawCodeLines.length) {
+          reRenderAllFast();
+      }
+  });
+
   // --- Tokenized Code to Type Out ---
   const rawCodeLines = [
     [ {text: "/**", cl: "comment"} ],
@@ -648,20 +682,22 @@
   }
 
   function renderGuestbook() {
-      const messages = JSON.parse(localStorage.getItem('guestbook')) || [
-          "Nice to meet you!",
-          "This terminal looks sick."
-      ];
+      const messages = globalMessages.length > 0 ? globalMessages : [];
+      
+      if (messages.length === 0) {
+          messages.push({ id: 'demo1', text: "Nice to meet you!" });
+          messages.push({ id: 'demo2', text: "This terminal looks sick." });
+      }
       
       if (messages.length > 0) {
           addDOMLine([ {text: "// Guestbook entries", cl: "comment"} ]);
           addDOMLine([ {text: "company", cl: "variable"}, {text: ".", cl: "punctuation"}, {text: "guestbook ", cl: "property"}, {text: "= ", cl: "operator"}, {text: "[", cl: "punctuation"} ]);
           
-          messages.forEach((msg, idx) => {
+          messages.forEach((msgObj) => {
               addDOMLine([ 
                   {text: "  ", cl: ""}, 
-                  {text: `"${msg}",`, cl: "string"},
-                  {html: `<span class="comment delete-btn" data-index="${idx}" style="cursor:pointer; margin-left: 10px;" title="Delete message">[X]</span>`}
+                  {text: `"${msgObj.text}",`, cl: "string"},
+                  {html: `<span class="comment delete-btn" data-index="${msgObj.id}" style="cursor:pointer; margin-left: 10px;" title="Delete message">[X]</span>`}
               ]);
           });
           
@@ -709,20 +745,17 @@
               e.preventDefault();
               const text = input.innerText.trim();
               if (text) {
-                  let messages = JSON.parse(localStorage.getItem('guestbook')) || [
-                      "Nice to meet you!",
-                      "This terminal looks sick."
-                  ];
-                  messages.push(text);
-                  localStorage.setItem('guestbook', JSON.stringify(messages));
-                  
-                  reRenderAllFast();
+                  db.ref('guestbook').push({ text: text });
+                  input.innerText = '';
               }
           }
       });
   }
 
   function reRenderAllFast() {
+      const activeEl = document.activeElement;
+      const wasFocused = (activeEl && activeEl.id === 'guest-input');
+
       // Clear
       codeContent.innerHTML = '';
       lineNumbers.innerHTML = '';
@@ -740,7 +773,7 @@
       // Refocus and move cursor to end
       const input = document.getElementById('guest-input');
       if(input) {
-          input.focus();
+          if (wasFocused) input.focus();
           scrollToBottom();
       }
   }
@@ -838,15 +871,12 @@
           const pwd = document.getElementById('delete-password').value;
           const status = document.getElementById('password-status');
           if (pwd === "0070") {
-              let messages = JSON.parse(localStorage.getItem('guestbook')) || [];
               if (typeof deleteIdxToProcess !== 'undefined') {
                   if (deleteIdxToProcess === 'ALL') {
-                      messages = [];
-                  } else if (deleteIdxToProcess > -1) {
-                      messages.splice(deleteIdxToProcess, 1);
+                      db.ref('guestbook').remove();
+                  } else if (deleteIdxToProcess && deleteIdxToProcess !== -1) {
+                      db.ref('guestbook/' + deleteIdxToProcess).remove();
                   }
-                  localStorage.setItem('guestbook', JSON.stringify(messages));
-                  reRenderAllFast();
               }
               passwordPopup.classList.remove('active');
               status.innerHTML = "";
